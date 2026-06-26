@@ -1,4 +1,4 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api'
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -14,7 +14,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (token) headers['Authorization'] = `Token ${token}`
   if (options.body instanceof FormData) delete headers['Content-Type']
 
-  const res = await fetch(`${BASE}${path}`, { ...options, headers })
+  const res = await fetch(`${API}/api${path}`, { ...options, headers })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.error ?? err.detail ?? 'Request failed')
@@ -46,7 +46,7 @@ export const api = {
 
   uploadPhoto: (assessmentId: number, formData: FormData) => {
     const token = getToken()
-    return fetch(`${BASE}/assessments/${assessmentId}/photos/`, {
+    return fetch(`${API}/api/assessments/${assessmentId}/photos/`, {
       method: 'POST',
       headers: token ? { Authorization: `Token ${token}` } : {},
       body: formData,
